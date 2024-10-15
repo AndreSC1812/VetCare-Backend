@@ -1,0 +1,11 @@
+# Node modules
+node_modules/
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Archivos de configuración de npm
+package-lock.json
+yarn.lock
