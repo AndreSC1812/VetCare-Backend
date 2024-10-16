@@ -1,7 +1,7 @@
 //estructura de nuestro Veterinario
 import mongoose from "mongoose";
 
-const veterinarianSchema = mongoose.Schema(
+const veterinarianSchema = new mongoose.Schema(
   {
     username: {
       type: String,
