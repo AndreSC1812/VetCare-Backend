@@ -1,23 +1,15 @@
-const express = require ("express");
-const mongoose = require("mongoose");
-require("dotenv").config();
+//aqui estara todo lo necesario para arrancar el servidor entero
+//en modulos creados por mi es necesario poner el.js
+import app from "./app.js";
+import { connectDB } from "./db.js";
+import dotenv from "dotenv";
 
-const app = express();
+dotenv.config(); // Cargar las variables de entorno
 
-//escuchamos en el puerto 3000
-const port = process.env.PORT || 3000;
+//conectamos a la base de datos
+connectDB();
 
-//rutas de prueba
-app.get("/api",(req,res)=>{
-    res.send("Bienvenido a la API de VetCare");
-});
+//Escuchar en el puerto definido en las variables de entorno
+app.listen(process.env.PORT);
 
-// Middleware para parsear JSON
-app.use(express.json());
-
-// Conexión a la base de datos MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("Conexión exitosa a MongoDB"))
-    .catch(err => console.error("Error al conectar a MongoDB:", err));
-
-app.listen(port, ()=> console.log("servidor escuchando en el puerto ", port));
+console.log("Server escuchando en puerto ", process.env.PORT);
