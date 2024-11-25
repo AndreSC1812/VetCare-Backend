@@ -39,11 +39,14 @@ export const register = async (req, res) => {
     // Lo guardamos en la base de datos
     const userSaved = await newUser.save();
 
-    // Creamos un token para nuestro usuario
-    const token = await createAccessToken({ id: userSaved._id });
+    // Creamos un token para nuestro usuario encontrado
+    const token = await createAccessToken({
+      id: userSaved._id,
+      userType: userType, // incluimos el tipo de usuario en el token
+    });
 
     // Enviamos el token en la respuesta
-    res.json({
+    res.status(201).json({
       message: `${
         userType.charAt(0).toUpperCase() + userType.slice(1)
       } created successfully`,
@@ -96,11 +99,14 @@ export const login = async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect password" });
 
-    // Creamos un token para nuestro usuario encontrado
-    const token = await createAccessToken({ id: userFound._id });
+    // Creamos un token para nuestro usuario
+    const token = await createAccessToken({
+      id: userFound._id,
+      userType: userType, // incluimos el tipo de usuario en el token
+    });
 
     // Enviamos el token en la respuesta
-    res.json({
+    res.status(200).json({
       message: `${
         userType.charAt(0).toUpperCase() + userType.slice(1)
       } login successfully`,
@@ -122,4 +128,26 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   //en el cliente eliminaremos el token y con eso cerramos la sesion
   return res.status(200).json({ message: "Logout successful" });
+};
+
+// Función para el perfil del usuario
+export const profile = async (req, res) => {
+  const { id, userType } = req.user; // Obtienes `id` y `userType`
+
+  // Busca al usuario en la base de datos según su `userType`
+  const Model = userType === "veterinarian" ? Veterinarian : Client;
+
+  try {
+    const user = await Model.findById(id); // Utilizamos await para obtener el usuario
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (err) {
+    // Manejo de errores
+    console.error(err); // Para depuración
+    res.status(500).json({ message: "Server error" });
+  }
 };
