@@ -3,9 +3,14 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import multer from "multer";
+import path from "path";
 //importamos las rutas de autenticacion
 import authRoutes from "./routes/auth.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
+import clientRoutes from "./routes/client.routes.js";
+import veterinarianRoutes from "./routes/veterinarian.routes.js";
+import petRoutes from "./routes/pet.routes.js";
+import emailRoutes from "./routes/email.routes.js";
 
 //usamos app como nuestra instancia de express
 const app = express();
@@ -14,9 +19,11 @@ const app = express();
 const storage = multer.diskStorage({
   destination: "uploads/",
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    const fileExtension = path.extname(file.originalname); // Extrae la extensión del archivo
+    cb(null, Date.now() + fileExtension); // Usa solo la marca de tiempo y la extensión
   },
 });
+
 const upload = multer({ storage });
 
 //usaremos cors para que cualquiera pueda hacer peticiones al backend
@@ -36,6 +43,17 @@ app.use("/api/auth", authRoutes);
 
 //ruta de perfil
 app.use("/api/profile", profileRoutes(upload));
+
+// Rutas para clientes y veterinarios
+app.use("/api/clients", clientRoutes);
+
+app.use("/api/veterinarians", veterinarianRoutes);
+
+// Rutas de mascotas
+app.use("/api/pets", petRoutes(upload));
+
+// Rutas de correos
+app.use("/api/email", emailRoutes);
 
 //exportamos el app
 export default app;

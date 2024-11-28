@@ -22,6 +22,11 @@ const petSchema = new mongoose.Schema(
       ref: "Client", // Relación con el cliente (dueño)
       required: true,
     },
+    image: {
+      type: String,
+      default:
+        "https://img.freepik.com/free-icon/animal-pet-silhouette_318-675028.jpg", // Imagen predeterminada
+    },
   },
   { timestamps: true }
 );

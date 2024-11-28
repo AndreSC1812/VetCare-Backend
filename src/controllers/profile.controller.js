@@ -45,8 +45,9 @@ export const updateProfileData = async (req, res) => {
     let user;
 
     if (userType === "veterinarian") {
-      // Si es un veterinario, obtenemos solo los campos relevantes
+      // Si es un veterinario, obtenemos los campos relevantes
       const {
+        fullname,
         username,
         email,
         phone,
@@ -56,6 +57,7 @@ export const updateProfileData = async (req, res) => {
       } = req.body;
 
       const updateData = {};
+      if (fullname) updateData.fullname = fullname;
       if (username) updateData.username = username;
       if (email) updateData.email = email;
       if (phone) updateData.phone = phone;
@@ -68,10 +70,11 @@ export const updateProfileData = async (req, res) => {
         new: true,
       });
     } else {
-      // Si es un cliente, obtenemos solo los campos relevantes
-      const { username, email, phone, address } = req.body;
+      // Si es un cliente, obtenemos los campos relevantes
+      const { fullname, username, email, phone, address } = req.body;
 
       const updateData = {};
+      if (fullname) updateData.fullname = fullname;
       if (username) updateData.username = username;
       if (email) updateData.email = email;
       if (phone) updateData.phone = phone;

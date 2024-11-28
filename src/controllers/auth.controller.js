@@ -6,50 +6,62 @@ import bcrypt from "bcryptjs";
 //importamos la funcion que crea un token jwt
 import { createAccessToken } from "../libs/jwt.js";
 
-// Funcion para registrarse
+// Función para registrarse
 export const register = async (req, res) => {
-  // Extraemos los campos del body que nos envían
   const { userType, email, password, username } = req.body;
 
   try {
+    // Verificamos el tipo de usuario
+    if (!["veterinarian", "client"].includes(userType)) {
+      return res.status(400).json({ message: "Tipo de usuario inválido" });
+    }
+
+    // Verificar si ya existe un usuario con el mismo email
+    const emailExists = await (userType === "veterinarian"
+      ? Veterinarian
+      : Client
+    ).findOne({ email });
+
+    if (emailExists) {
+      return res
+        .status(400)
+        .json({ message: "Ya existe un usuario con ese email" });
+    }
+
+    // Verificar si ya existe un usuario con el mismo username
+    const usernameExists = await (userType === "veterinarian"
+      ? Veterinarian
+      : Client
+    ).findOne({ username });
+
+    if (usernameExists) {
+      return res
+        .status(400)
+        .json({ message: "Ya existe un usuario con ese nombre de usuario" });
+    }
+
     // Ejecutamos bcrypt para encriptar la contraseña
     const passwordHash = await bcrypt.hash(password, 10);
 
-    let newUser;
+    // Creamos el usuario según el tipo
+    const newUser =
+      userType === "veterinarian"
+        ? new Veterinarian({ username, email, password: passwordHash })
+        : new Client({ username, email, password: passwordHash });
 
-    // Verificamos el tipo de usuario
-    if (userType === "veterinarian") {
-      // Creamos un objeto veterinario
-      newUser = new Veterinarian({
-        username,
-        email,
-        password: passwordHash,
-      });
-    } else if (userType === "client") {
-      // Creamos un objeto cliente
-      newUser = new Client({
-        username,
-        email,
-        password: passwordHash,
-      });
-    } else {
-      return res.status(400).json({ message: "Invalid user type" });
-    }
-
-    // Lo guardamos en la base de datos
+    // Guardamos en la base de datos
     const userSaved = await newUser.save();
 
-    // Creamos un token para nuestro usuario encontrado
+    // Creamos un token
     const token = await createAccessToken({
       id: userSaved._id,
-      userType: userType, // incluimos el tipo de usuario en el token
+      userType,
     });
 
-    // Enviamos el token en la respuesta
     res.status(201).json({
       message: `${
         userType.charAt(0).toUpperCase() + userType.slice(1)
-      } created successfully`,
+      } creado exitosamente`,
       token,
       user: {
         id: userSaved._id,
@@ -60,56 +72,54 @@ export const register = async (req, res) => {
       },
     });
   } catch (error) {
-    // Si sale mal, enviamos una respuesta al cliente
-    res.status(500).json({ message: error.message });
+    if (error.name === "ValidationError") {
+      res.status(400).json({ message: "Datos proporcionados inválidos" });
+    } else {
+      res.status(500).json({ message: "Error en el servidor" });
+    }
   }
 };
 
-//funcion para hacer iniciar sesion
+// Función para hacer iniciar sesión
 export const login = async (req, res) => {
-  // Extraemos los campos del body que nos envían
   const { userType, email, password } = req.body;
 
   try {
-    let userFound;
-
     // Verificamos el tipo de usuario
-    if (userType === "veterinarian") {
-      // Buscamos si el veterinario existe
-      userFound = await Veterinarian.findOne({ email });
-    } else if (userType === "client") {
-      // Buscamos si el cliente existe
-      userFound = await Client.findOne({ email });
-    } else {
-      return res.status(400).json({ message: "Invalid user type" });
+    if (!["veterinarian", "client"].includes(userType)) {
+      return res.status(400).json({ message: "Tipo de usuario inválido" });
     }
 
-    // Si no lo encuentra mandamos una respuesta de error
-    if (!userFound)
-      return res.status(400).json({
+    // Buscar al usuario
+    const userFound =
+      userType === "veterinarian"
+        ? await Veterinarian.findOne({ email })
+        : await Client.findOne({ email });
+
+    if (!userFound) {
+      return res.status(404).json({
         message: `${
           userType.charAt(0).toUpperCase() + userType.slice(1)
-        } not found`,
+        } no encontrado`,
       });
+    }
 
-    // Si encuentra uno, usamos bcrypt para hacer una comparación de la contraseña
+    // Verificamos la contraseña
     const isMatch = await bcrypt.compare(password, userFound.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Contraseña incorrecta" });
+    }
 
-    // Si la contraseña no coincide respondemos una respuesta de error
-    if (!isMatch)
-      return res.status(400).json({ message: "Incorrect password" });
-
-    // Creamos un token para nuestro usuario
+    // Creamos un token
     const token = await createAccessToken({
       id: userFound._id,
-      userType: userType, // incluimos el tipo de usuario en el token
+      userType,
     });
 
-    // Enviamos el token en la respuesta
     res.status(200).json({
       message: `${
         userType.charAt(0).toUpperCase() + userType.slice(1)
-      } login successfully`,
+      } inició sesión correctamente`,
       token,
       user: {
         id: userFound._id,
@@ -120,34 +130,46 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    // Si sale mal, enviamos una respuesta al cliente
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Error en el servidor" });
   }
 };
 
 export const logout = (req, res) => {
   //en el cliente eliminaremos el token y con eso cerramos la sesion
-  return res.status(200).json({ message: "Logout successful" });
+  return res.status(200).json({ message: "Cierre de sesión exitoso" });
 };
 
 // Función para el perfil del usuario
 export const profile = async (req, res) => {
-  const { id, userType } = req.user; // Obtienes `id` y `userType`
-
-  // Busca al usuario en la base de datos según su `userType`
-  const Model = userType === "veterinarian" ? Veterinarian : Client;
+  const { id, userType } = req.user;
 
   try {
-    const user = await Model.findById(id); // Utilizamos await para obtener el usuario
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    // Verificamos el tipo de usuario
+    if (!["veterinarian", "client"].includes(userType)) {
+      return res.status(400).json({ message: "Tipo de usuario inválido" });
     }
 
-    res.json({ user });
+    // Buscar usuario
+    const user =
+      userType === "veterinarian"
+        ? await Veterinarian.findById(id)
+        : await Client.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.status(200).json({
+      message: "Perfil de usuario recuperado exitosamente",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
   } catch (err) {
-    // Manejo de errores
-    console.error(err); // Para depuración
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Error en el servidor" });
   }
 };

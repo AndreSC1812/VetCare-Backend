@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 
 const veterinarianSchema = new mongoose.Schema(
   {
+    fullname: {
+      type: String, // Nombre completo
+    },
     username: {
       type: String,
       required: true,
