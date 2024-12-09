@@ -11,6 +11,7 @@ import clientRoutes from "./routes/client.routes.js";
 import veterinarianRoutes from "./routes/veterinarian.routes.js";
 import petRoutes from "./routes/pet.routes.js";
 import emailRoutes from "./routes/email.routes.js";
+import reportRoutes from "./routes/report.routes.js";
 
 //usamos app como nuestra instancia de express
 const app = express();
@@ -54,6 +55,9 @@ app.use("/api/pets", petRoutes(upload));
 
 // Rutas de correos
 app.use("/api/email", emailRoutes);
+
+// Rutas de informes
+app.use("/api/reports", reportRoutes);
 
 //exportamos el app
 export default app;

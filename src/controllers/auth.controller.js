@@ -123,6 +123,7 @@ export const login = async (req, res) => {
       token,
       user: {
         id: userFound._id,
+        fullname: userFound.fullname,
         username: userFound.username,
         email: userFound.email,
         createdAt: userFound.createdAt,
@@ -139,7 +140,6 @@ export const logout = (req, res) => {
   return res.status(200).json({ message: "Cierre de sesión exitoso" });
 };
 
-// Función para el perfil del usuario
 export const profile = async (req, res) => {
   const { id, userType } = req.user;
 
@@ -149,27 +149,23 @@ export const profile = async (req, res) => {
       return res.status(400).json({ message: "Tipo de usuario inválido" });
     }
 
-    // Buscar usuario
+    // Buscar usuario según el tipo
     const user =
       userType === "veterinarian"
-        ? await Veterinarian.findById(id)
-        : await Client.findById(id);
+        ? await Veterinarian.findById(id).select("-password") // Excluimos la contraseña
+        : await Client.findById(id).select("-password").populate("pets"); // Excluimos la contraseña y poblamos las mascotas si es cliente
 
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
+    // Respuesta con los datos completos del usuario
     res.status(200).json({
       message: "Perfil de usuario recuperado exitosamente",
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
+      user, // Enviamos todos los datos excepto la contraseña
     });
   } catch (err) {
+    console.error("Error al recuperar el perfil del usuario:", err);
     res.status(500).json({ message: "Error en el servidor" });
   }
 };

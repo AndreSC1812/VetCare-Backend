@@ -39,7 +39,7 @@ export const uploadPetImage = async (req, res) => {
 
 // Crear una nueva mascota y asociarla al cliente
 export const createPet = async (req, res) => {
-  const { name, species, breed, age } = req.body;
+  const { name, species, age, chipNumber, weight } = req.body; // Ahora chipNumber y weight son requeridos
   const { id } = req.user; // ID del cliente extraído del token
 
   try {
@@ -53,8 +53,9 @@ export const createPet = async (req, res) => {
     const newPet = new Pet({
       name,
       species,
-      breed,
       age,
+      chipNumber, // Nuevo campo
+      weight, // Nuevo campo
       owner: id, // Asigna el cliente como dueño de la mascota
     });
 
@@ -97,7 +98,7 @@ export const getPetsByClient = async (req, res) => {
 // Actualizar una mascota
 export const updatePet = async (req, res) => {
   const { petId } = req.params; // ID de la mascota en la URL
-  const { name, species, breed, age, image } = req.body; // Nuevos datos de la mascota
+  const { name, species, age, image, chipNumber, weight } = req.body; // Nuevos datos de la mascota
 
   try {
     // Buscar la mascota por su ID
@@ -110,9 +111,10 @@ export const updatePet = async (req, res) => {
     // Actualizamos los campos de la mascota si se proporcionan
     if (name) pet.name = name;
     if (species) pet.species = species;
-    if (breed) pet.breed = breed;
     if (age) pet.age = age;
-    if (image) pet.image = image; // Si se proporciona una nueva imagen, actualizamos la URL
+    if (image) pet.image = image;
+    if (chipNumber) pet.chipNumber = chipNumber; // Actualizamos el chipNumber
+    if (weight) pet.weight = weight; // Actualizamos el peso
 
     // Guardamos la mascota con los nuevos cambios
     await pet.save();
@@ -148,7 +150,7 @@ export const deletePet = async (req, res) => {
     }
 
     // Eliminar la mascota de la colección de mascotas
-    await pet.remove();
+    await pet.deleteOne();
 
     // Eliminar la mascota del perfil del cliente
     const client = await Client.findById(id);
@@ -160,6 +162,25 @@ export const deletePet = async (req, res) => {
     res.json({
       message: "Pet deleted successfully",
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Obtener detalles de una mascota por su ID
+export const getPetById = async (req, res) => {
+  const { petId } = req.params; // Obtener el petId desde los parámetros de la URL
+
+  try {
+    // Buscar la mascota por su ID
+    const pet = await Pet.findById(petId);
+
+    if (!pet) {
+      return res.status(404).json({ message: "Pet not found" });
+    }
+
+    res.json({ pet }); // Retornar los detalles de la mascota
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

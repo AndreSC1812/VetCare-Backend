@@ -5,6 +5,7 @@ import {
   updatePet,
   deletePet,
   uploadPetImage,
+  getPetById,
 } from "../controllers/pet.controller.js";
 import { authRequired } from "../middlewares/validateToken.js";
 
@@ -17,6 +18,9 @@ export default (upload) => {
 
   // Ruta para obtener todas las mascotas de un cliente específico
   router.get("/:clientId", getPetsByClient);
+
+  // Ruta para obtener los detalles de una mascota por su ID
+  router.get("/pet/:petId", getPetById);
 
   // Ruta para actualizar una mascota
   router.put("/:petId", authRequired, updatePet);

@@ -11,9 +11,6 @@ const petSchema = new mongoose.Schema(
       type: String,
       required: true, // Ejemplo: perro, gato, etc.
     },
-    breed: {
-      type: String, // Raza de la mascota (opcional)
-    },
     age: {
       type: Number, // Edad en años
     },
@@ -26,6 +23,12 @@ const petSchema = new mongoose.Schema(
       type: String,
       default:
         "https://img.freepik.com/free-icon/animal-pet-silhouette_318-675028.jpg", // Imagen predeterminada
+    },
+    chipNumber: {
+      type: String, // Número del chip de la mascota
+    },
+    weight: {
+      type: Number, // Peso de la mascota en KG
     },
   },
   { timestamps: true }
