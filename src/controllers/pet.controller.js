@@ -11,7 +11,7 @@ export const uploadPetImage = async (req, res) => {
   }
 
   // Generar la URL pública de la imagen usando el nombre del archivo guardado
-  const imagePath = `http://192.168.0.29:3000/uploads/${req.file.filename}`;
+  const imagePath = `https://vetcare-backend-bm97.onrender.com/uploads/${req.file.filename}`;
 
   try {
     // Buscar la mascota por su ID

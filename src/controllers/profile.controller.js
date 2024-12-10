@@ -11,7 +11,7 @@ export const uploadProfileImage = async (req, res) => {
   }
 
   // Aquí se genera la URL pública de la imagen usando el nombre del archivo guardado
-  const imagePath = `http://192.168.0.29:3000/uploads/${req.file.filename}`;
+  const imagePath = `https://vetcare-backend-bm97.onrender.com/uploads/${req.file.filename}`;
 
   const Model = userType === "veterinarian" ? Veterinarian : Client;
 
@@ -54,6 +54,8 @@ export const updateProfileData = async (req, res) => {
         specialization,
         yearsOfExperience,
         clinicAddress,
+        startTime,
+        endTime,
       } = req.body;
 
       const updateData = {};
@@ -64,6 +66,8 @@ export const updateProfileData = async (req, res) => {
       if (specialization) updateData.specialization = specialization;
       if (yearsOfExperience) updateData.yearsOfExperience = yearsOfExperience;
       if (clinicAddress) updateData.clinicAddress = clinicAddress;
+      if (startTime) updateData.startTime = startTime;
+      if (endTime) updateData.endTime = endTime;
 
       // Actualizamos al veterinario
       user = await Veterinarian.findByIdAndUpdate(id, updateData, {
