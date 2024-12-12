@@ -67,6 +67,7 @@ export const register = async (req, res) => {
         id: userSaved._id,
         username: userSaved.username,
         email: userSaved.email,
+        fullName: userSaved.fullName,
         createdAt: userSaved.createdAt,
         updatedAt: userSaved.updatedAt,
       },

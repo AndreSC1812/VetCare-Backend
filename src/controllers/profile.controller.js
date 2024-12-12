@@ -1,6 +1,8 @@
 // controlador para el perfil del usuario
 import Client from "../models/client.model.js";
 import Veterinarian from "../models/veterinarian.model.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const uploadProfileImage = async (req, res) => {
   const { id, userType } = req.user; // Extraemos el id y el tipo de usuario desde el token
@@ -10,8 +12,8 @@ export const uploadProfileImage = async (req, res) => {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  // Aquí se genera la URL pública de la imagen usando el nombre del archivo guardado
-  const imagePath = `https://vetcare-backend-bm97.onrender.com/uploads/${req.file.filename}`;
+  // Usamos la variable de entorno para construir la URL
+  const imagePath = `${process.env.IMAGE_URL_BASE}${req.file.filename}`;
 
   const Model = userType === "veterinarian" ? Veterinarian : Client;
 

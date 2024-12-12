@@ -1,5 +1,7 @@
 import Pet from "../models/pet.model.js";
 import Client from "../models/client.model.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Subir imagen de la mascota
 export const uploadPetImage = async (req, res) => {
@@ -10,8 +12,8 @@ export const uploadPetImage = async (req, res) => {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  // Generar la URL pública de la imagen usando el nombre del archivo guardado
-  const imagePath = `https://vetcare-backend-bm97.onrender.com/uploads/${req.file.filename}`;
+  // Usamos la variable de entorno para construir la URL
+  const imagePath = `${process.env.IMAGE_URL_BASE}${req.file.filename}`;
 
   try {
     // Buscar la mascota por su ID
