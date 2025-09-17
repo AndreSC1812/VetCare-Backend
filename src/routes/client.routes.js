@@ -6,8 +6,8 @@ import {
 
 const router = Router();
 
-// Rutas para listar y obtener clientes
-router.get("/", getAllClients); // Listar todos los clientes
-router.get("/:id", getClientById); // Obtener cliente específico por ID
+// Routes to list and retrieve clients
+router.get("/", getAllClients); // List all clients
+router.get("/:id", getClientById); // Get a specific client by ID
 
 export default router;

@@ -1,4 +1,4 @@
-//Rutas de citas
+// Appointment routes
 import { Router } from "express";
 
 import {
@@ -12,17 +12,17 @@ import { authRequired } from "../middlewares/validateToken.js";
 
 const router = Router();
 
-// Ruta para crear una cita
+// Route to create a new appointment
 router.post("/", authRequired, createAppointment);
 
-// Ruta para obtener las citas de un cliente (requiere autenticación)
+// Route to get appointments for a client (requires authentication)
 router.get("/client", authRequired, getAppointmentsByClient);
 
-// Ruta para obtener las citas de un veterinario específico (requiere autenticación)
+// Route to get appointments for a specific veterinarian (requires authentication)
 router.get("/veterinarian", authRequired, getAppointmentsByVeterinarian);
 
-// Ruta para modificar el estado de una cita
-router.put("/:idAppointment/status", authRequired, updateAppointmentStatus);
+// Route to update the status of an appointment
+router.put("/:appointmentId/status", authRequired, updateAppointmentStatus);
 
-//exportamos las rutas
+// Export the appointment routes
 export default router;

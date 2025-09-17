@@ -9,30 +9,30 @@ import {
 } from "../controllers/pet.controller.js";
 import { authRequired } from "../middlewares/validateToken.js";
 
-// Recibe 'upload' como parámetro
+// Receives 'upload' as a parameter (for multer)
 export default (upload) => {
   const router = Router();
 
-  // Ruta para crear una nueva mascota
+  // Route to create a new pet
   router.post("/", authRequired, createPet);
 
-  // Ruta para obtener todas las mascotas de un cliente específico
+  // Route to get all pets of a specific client
   router.get("/:clientId", getPetsByClient);
 
-  // Ruta para obtener los detalles de una mascota por su ID
+  // Route to get pet details by pet ID
   router.get("/pet/:petId", getPetById);
 
-  // Ruta para actualizar una mascota
+  // Route to update a pet
   router.put("/:petId", authRequired, updatePet);
 
-  // Ruta para eliminar una mascota
+  // Route to delete a pet
   router.delete("/:petId", authRequired, deletePet);
 
-  // Ruta para subir imagen de la mascota
+  // Route to upload a pet image
   router.post(
-    "/:petId/upload", // Ruta para subir la imagen de la mascota
+    "/:petId/upload",
     authRequired,
-    upload.single("petImage"), // Usamos multer aquí
+    upload.single("petImage"), // Using multer for file upload
     uploadPetImage
   );
 

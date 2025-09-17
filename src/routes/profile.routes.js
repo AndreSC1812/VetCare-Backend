@@ -9,7 +9,7 @@ import { authRequired } from "../middlewares/validateToken.js";
 export default (upload) => {
   const router = Router();
 
-  // Ruta para subir imagen de perfil
+  // Route to upload profile image
   router.post(
     "/upload",
     authRequired,
@@ -17,7 +17,7 @@ export default (upload) => {
     uploadProfileImage
   );
 
-  // Ruta para actualizar datos del perfil
+  // Route to update profile data
   router.put("/update", authRequired, updateProfileData);
 
   return router;

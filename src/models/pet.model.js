@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// Definimos el esquema de las mascotas
+// Define the Pet schema
 const petSchema = new mongoose.Schema(
   {
     name: {
@@ -9,30 +9,30 @@ const petSchema = new mongoose.Schema(
     },
     species: {
       type: String,
-      required: true, // Ejemplo: perro, gato, etc.
+      required: true, // Example: dog, cat, etc.
     },
     age: {
-      type: Number, // Edad en años
+      type: Number, // Age in years
     },
-    owner: {
+    ownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Client", // Relación con el cliente (dueño)
+      ref: "Client", // Reference to the client (owner)
       required: true,
     },
     image: {
       type: String,
       default:
-        "https://img.freepik.com/free-icon/animal-pet-silhouette_318-675028.jpg", // Imagen predeterminada
+        "https://img.freepik.com/free-icon/animal-pet-silhouette_318-675028.jpg", // Default image
     },
     chipNumber: {
-      type: String, // Número del chip de la mascota
+      type: String, // Pet's microchip number
     },
     weight: {
-      type: Number, // Peso de la mascota en KG
+      type: Number, // Pet weight in KG
     },
   },
-  { timestamps: true }
+  { timestamps: true } // Include createdAt and updatedAt timestamps
 );
 
-// Exportamos el modelo de la mascota
+// Export the Pet model
 export default mongoose.model("Pet", petSchema);

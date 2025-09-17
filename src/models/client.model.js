@@ -1,10 +1,10 @@
-//estructura de nuestro cliente
+// Client schema
 import mongoose from "mongoose";
 
 const clientSchema = new mongoose.Schema(
   {
-    fullname: {
-      type: String, // Nombre completo
+    fullName: {
+      type: String, // Full name
     },
     username: {
       type: String,
@@ -21,15 +21,15 @@ const clientSchema = new mongoose.Schema(
       unique: true,
     },
     address: {
-      type: String, // Dirección del cliente
+      type: String, // Client address
     },
     phone: {
-      type: String, // Número de teléfono del cliente
+      type: String, // Client phone number
     },
     pets: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Pet", // Referencia a las mascotas
+        ref: "Pet", // Reference to pets
       },
     ],
     profileImage: {
@@ -38,8 +38,8 @@ const clientSchema = new mongoose.Schema(
         "https://img.freepik.com/vector-premium/icono-perfil-usuario-estilo-plano-ilustracion-vector-avatar-miembro-sobre-fondo-aislado-concepto-negocio-signo-permiso-humano_157943-15752.jpg",
     },
   },
-  { timestamps: true }
+  { timestamps: true } // Include createdAt and updatedAt timestamps
 );
 
-// Exportamos el modelo del cliente
+// Export the Client model
 export default mongoose.model("Client", clientSchema);

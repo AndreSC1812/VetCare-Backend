@@ -1,6 +1,6 @@
 import Veterinarian from "../models/veterinarian.model.js";
 
-// Listar todos los veterinarios sin mostrar la contraseña
+// List all veterinarians without showing the password
 export const getAllVeterinarians = async (req, res) => {
   try {
     const veterinarians = await Veterinarian.find().select("-password");
@@ -11,7 +11,7 @@ export const getAllVeterinarians = async (req, res) => {
   }
 };
 
-// Obtener un veterinario específico sin mostrar la contraseña
+// Get a specific veterinarian without showing the password
 export const getVeterinarianById = async (req, res) => {
   const { id } = req.params;
   try {

@@ -3,30 +3,30 @@ import Client from "../models/client.model.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Subir imagen de la mascota
+// Upload pet image
 export const uploadPetImage = async (req, res) => {
-  const { petId } = req.params; // ID de la mascota en la URL
+  const { petId } = req.params; // Pet ID in the URL
 
-  // Verifica si el archivo fue cargado
+  // Check if the file was uploaded
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  // Usamos la variable de entorno para construir la URL
+  // Use the environment variable to build the URL
   const imagePath = `${process.env.IMAGE_URL_BASE}${req.file.filename}`;
 
   try {
-    // Buscar la mascota por su ID
+    // Find the pet by its ID
     const pet = await Pet.findById(petId);
 
     if (!pet) {
       return res.status(404).json({ message: "Pet not found" });
     }
 
-    // Actualizar la mascota con la URL de la imagen
+    // Update the pet with the image URL
     pet.image = imagePath;
 
-    // Guardar la mascota con la nueva imagen
+    // Save the pet with the new image
     await pet.save();
 
     res.json({
@@ -39,32 +39,32 @@ export const uploadPetImage = async (req, res) => {
   }
 };
 
-// Crear una nueva mascota y asociarla al cliente
+// Create a new pet and associate it to the client
 export const createPet = async (req, res) => {
-  const { name, species, age, chipNumber, weight } = req.body; // Ahora chipNumber y weight son requeridos
-  const { id } = req.user; // ID del cliente extraído del token
+  const { name, species, age, chipNumber, weight } = req.body; // Now chipNumber and weight are required
+  const { id } = req.user; // Client ID extracted from the token
 
   try {
-    // Verificar que el cliente existe
+    // Check that the client exists
     const client = await Client.findById(id);
     if (!client) {
       return res.status(404).json({ message: "Client not found" });
     }
 
-    // Crear la mascota y asociarla al cliente
+    // Create the pet and associate it to the client
     const newPet = new Pet({
       name,
       species,
       age,
-      chipNumber, // Nuevo campo
-      weight, // Nuevo campo
-      owner: id, // Asigna el cliente como dueño de la mascota
+      chipNumber, // New field
+      weight, // New field
+      owner: id, // Assign client as pet owner
     });
 
-    // Guardar la mascota en la base de datos
+    // Save the pet in the database
     const savedPet = await newPet.save();
 
-    // Agregar la mascota al perfil del cliente
+    // Add the pet to the client's profile
     client.pets.push(savedPet._id);
     await client.save();
 
@@ -78,12 +78,12 @@ export const createPet = async (req, res) => {
   }
 };
 
-// Obtener todas las mascotas de un cliente específico
+// Get all pets for a specific client
 export const getPetsByClient = async (req, res) => {
-  const { clientId } = req.params; // ID del cliente en la URL
+  const { clientId } = req.params; // Client ID in the URL
 
   try {
-    // Buscar al cliente y poblar su lista de mascotas
+    // Find the client and populate their pets list
     const client = await Client.findById(clientId).populate("pets");
 
     if (!client) {
@@ -97,28 +97,28 @@ export const getPetsByClient = async (req, res) => {
   }
 };
 
-// Actualizar una mascota
+// Update a pet
 export const updatePet = async (req, res) => {
-  const { petId } = req.params; // ID de la mascota en la URL
-  const { name, species, age, image, chipNumber, weight } = req.body; // Nuevos datos de la mascota
+  const { petId } = req.params; // Pet ID in the URL
+  const { name, species, age, image, chipNumber, weight } = req.body; // New pet data
 
   try {
-    // Buscar la mascota por su ID
+    // Find the pet by its ID
     const pet = await Pet.findById(petId);
 
     if (!pet) {
       return res.status(404).json({ message: "Pet not found" });
     }
 
-    // Actualizamos los campos de la mascota si se proporcionan
+    // Update pet fields if provided
     if (name) pet.name = name;
     if (species) pet.species = species;
     if (age) pet.age = age;
     if (image) pet.image = image;
-    if (chipNumber) pet.chipNumber = chipNumber; // Actualizamos el chipNumber
-    if (weight) pet.weight = weight; // Actualizamos el peso
+    if (chipNumber) pet.chipNumber = chipNumber;
+    if (weight) pet.weight = weight;
 
-    // Guardamos la mascota con los nuevos cambios
+    // Save the pet with the new changes
     await pet.save();
 
     res.json({
@@ -131,33 +131,35 @@ export const updatePet = async (req, res) => {
   }
 };
 
-// Eliminar una mascota
+// Delete a pet
 export const deletePet = async (req, res) => {
-  const { petId } = req.params; // ID de la mascota en la URL
-  const { id } = req.user; // ID del cliente extraído del token
+  const { petId } = req.params; // Pet ID in the URL
+  const { id } = req.user; // Client ID extracted from the token
 
   try {
-    // Buscar la mascota por su ID
+    // Find the pet by its ID
     const pet = await Pet.findById(petId);
 
     if (!pet) {
       return res.status(404).json({ message: "Pet not found" });
     }
 
-    // Verificar si el cliente es el dueño de la mascota antes de eliminarla
+    // Verify that the client is the pet owner before deleting it
     if (pet.owner.toString() !== id) {
       return res
         .status(403)
         .json({ message: "You are not authorized to delete this pet" });
     }
 
-    // Eliminar la mascota de la colección de mascotas
+    // Delete the pet from the pets collection
     await pet.deleteOne();
 
-    // Eliminar la mascota del perfil del cliente
+    // Remove the pet from the client's profile
     const client = await Client.findById(id);
     if (client) {
-      client.pets = client.pets.filter((petId) => petId.toString() !== petId);
+      client.pets = client.pets.filter(
+        (p) => p.toString() !== petId
+      );
       await client.save();
     }
 
@@ -170,19 +172,19 @@ export const deletePet = async (req, res) => {
   }
 };
 
-// Obtener detalles de una mascota por su ID
+// Get pet details by its ID
 export const getPetById = async (req, res) => {
-  const { petId } = req.params; // Obtener el petId desde los parámetros de la URL
+  const { petId } = req.params; // Get petId from URL parameters
 
   try {
-    // Buscar la mascota por su ID
+    // Find the pet by its ID
     const pet = await Pet.findById(petId);
 
     if (!pet) {
       return res.status(404).json({ message: "Pet not found" });
     }
 
-    res.json({ pet }); // Retornar los detalles de la mascota
+    res.json({ pet }); // Return pet details
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

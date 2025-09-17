@@ -1,15 +1,15 @@
-//aqui estara nuestra conexion a la base de datos MongoDB
+// MongoDB database connection
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-dotenv.config(); // Cargar las variables de entorno
+dotenv.config(); // Load environment variables
 
-//funcion asincrona para conectar a MongoDB atlas
+// Async function to connect to MongoDB Atlas
 export const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("conectado a mongodb");
+    console.log("Connected to MongoDB");
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };

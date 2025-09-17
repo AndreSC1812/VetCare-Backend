@@ -1,59 +1,59 @@
 import Appointment from "../models/appointment.model.js";
-import Veterinarian from "../models/veterinarian.model.js"; // Importa el modelo de Veterinario
+import Veterinarian from "../models/veterinarian.model.js"; // Import the Veterinarian model
 import Client from "../models/client.model.js";
 
-// Crear una nueva cita
+// Create a new appointment
 export const createAppointment = async (req, res) => {
-  const { id: clientId } = req.user; // Extraemos el ID del cliente desde el token
-  const { idVeterinarian, date } = req.body; // El ID del veterinario y la fecha de la cita vienen del cuerpo de la solicitud
+  const { id: clientId } = req.user; // Extract the client ID from the token
+  const { idVeterinarian, date } = req.body; // The veterinarian ID and the appointment date come from the request body
 
   try {
-    // Verificamos si el cliente existe
+    // Check if the client exists
     const client = await Client.findById(clientId);
     if (!client) {
-      return res.status(404).json({ message: "Cliente no encontrado" });
+      return res.status(404).json({ message: "Client not found" });
     }
 
-    // Verificamos si el veterinario existe
+    // Check if the veterinarian exists
     const veterinarian = await Veterinarian.findById(idVeterinarian);
     if (!veterinarian) {
-      return res.status(404).json({ message: "Veterinario no encontrado" });
+      return res.status(404).json({ message: "Veterinarian not found" });
     }
 
-    // Crear la nueva cita
+    // Create the new appointment
     const newAppointment = new Appointment({
-      idClient: clientId, // ID del cliente desde el token
-      idVeterinarian: idVeterinarian, // ID del veterinario pasado en el cuerpo
-      veterinarianFullname: veterinarian.fullname, // Nombre completo del veterinario
-      clientFullname: client.fullname, // Nombre completo del cliente
-      date: new Date(date), // Fecha de la cita
-      status: "Pendiente", // Estado inicial de la cita
+      idClient: clientId, // Client ID from the token
+      idVeterinarian: idVeterinarian, // Veterinarian ID passed in the body
+      veterinarianFullname: veterinarian.fullname, // Veterinarian's full name
+      clientFullname: client.fullname, // Client's full name
+      date: new Date(date), // Appointment date
+      status: "Pending", // Initial appointment status
     });
 
-    await newAppointment.save(); // Guardamos la nueva cita en la base de datos
+    await newAppointment.save(); // Save the new appointment to the database
 
-    // Respondemos con la cita creada
+    // Respond with the created appointment
     res.status(201).json(newAppointment);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error al crear la cita" });
+    res.status(500).json({ message: "Error creating the appointment" });
   }
 };
 
-// Mostrar las citas de un cliente específico
+// Show appointments for a specific client
 export const getAppointmentsByClient = async (req, res) => {
-  const { id: clientId } = req.user; // Extraemos el ID del cliente desde el token
+  const { id: clientId } = req.user; // Extract the client ID from the token
 
   try {
-    // Obtener las citas del cliente
+    // Get the client's appointments
     const appointments = await Appointment.find({ idClient: clientId })
-      .populate("idVeterinarian", "fullname") // Poblamos el veterinario para mostrar su nombre
+      .populate("idVeterinarian", "fullname") // Populate veterinarian to show their name
       .exec();
 
     if (appointments.length === 0) {
       return res
         .status(404)
-        .json({ message: "No se encontraron citas para este cliente." });
+        .json({ message: "No appointments found for this client." });
     }
 
     res.status(200).json(appointments);
@@ -61,24 +61,24 @@ export const getAppointmentsByClient = async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .json({ message: "Error al obtener las citas del cliente." });
+      .json({ message: "Error retrieving the client's appointments." });
   }
 };
 
-// Mostrar las citas de un veterinario específico
+// Show appointments for a specific veterinarian
 export const getAppointmentsByVeterinarian = async (req, res) => {
-  const { id } = req.user; // Extraemos el ID del veterinario desde el token
+  const { id } = req.user; // Extract the veterinarian ID from the token
 
   try {
-    // Obtener las citas del veterinario
+    // Get the veterinarian's appointments
     const appointments = await Appointment.find({ idVeterinarian: id })
-      .populate("idClient", "fullname") // Poblamos el cliente para mostrar su nombre
+      .populate("idClient", "fullname") // Populate client to show their name
       .exec();
 
     if (appointments.length === 0) {
       return res
         .status(200)
-        .json({ message: "No hay citas disponibles para este veterinario." }); // Cambiar 404 por 200
+        .json({ message: "No appointments available for this veterinarian." }); // Changed 404 to 200
     }
 
     res.status(200).json(appointments);
@@ -86,43 +86,43 @@ export const getAppointmentsByVeterinarian = async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .json({ message: "Error al obtener las citas del veterinario." });
+      .json({ message: "Error retrieving the veterinarian's appointments." });
   }
 };
 
-// Modificar el estado de una cita
+// Update an appointment's status
 export const updateAppointmentStatus = async (req, res) => {
-  const { idAppointment } = req.params; // Extraemos el ID de la cita desde los parámetros
-  const { status } = req.body; // El nuevo estado (Confirmada, Cancelada, etc.)
+  const { idAppointment } = req.params; // Extract the appointment ID from the parameters
+  const { status } = req.body; // The new status (Pending, Confirmed, Cancelled, etc.)
 
-  if (!["Pendiente", "Confirmada", "Cancelada"].includes(status)) {
-    return res.status(400).json({ message: "Estado no válido" });
+  if (!["Pending", "Confirmed", "Cancelled"].includes(status)) {
+    return res.status(400).json({ message: "Invalid status" });
   }
 
   try {
-    // Buscar la cita por ID
+    // Find the appointment by ID
     const appointment = await Appointment.findById(idAppointment);
 
     if (!appointment) {
-      return res.status(404).json({ message: "Cita no encontrada" });
+      return res.status(404).json({ message: "Appointment not found" });
     }
 
-    // Verificar que el veterinario que intenta modificar la cita sea el mismo que está asignado a la cita
+    // Verify that the veterinarian trying to modify the appointment is the one assigned
     if (appointment.idVeterinarian.toString() !== req.user.id) {
       return res
         .status(403)
-        .json({ message: "No tienes permiso para modificar esta cita" });
+        .json({ message: "You do not have permission to modify this appointment" });
     }
 
-    // Actualizar el estado de la cita
+    // Update the appointment status
     appointment.status = status;
-    await appointment.save(); // Guardamos los cambios
+    await appointment.save(); // Save changes
 
-    res.status(200).json(appointment); // Respondemos con la cita actualizada
+    res.status(200).json(appointment); // Respond with the updated appointment
   } catch (error) {
     console.error(error);
     res
       .status(500)
-      .json({ message: "Error al actualizar el estado de la cita" });
+      .json({ message: "Error updating the appointment status" });
   }
 };
