@@ -1,6 +1,6 @@
 import Client from "../models/client.model.js";
 
-// List all clients without showing the password
+// Listar todos los clientes sin mostrar la contraseña
 export const getAllClients = async (req, res) => {
   try {
     const clients = await Client.find().select("-password");
@@ -11,7 +11,7 @@ export const getAllClients = async (req, res) => {
   }
 };
 
-// Get a specific client without showing the password
+// Obtener un cliente específico sin mostrar la contraseña
 export const getClientById = async (req, res) => {
   const { id } = req.params;
   try {

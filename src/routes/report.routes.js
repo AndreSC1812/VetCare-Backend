@@ -11,22 +11,22 @@ import { authRequired } from "../middlewares/validateToken.js";
 
 const router = Router();
 
-// Route to create a new report
+// Crear un nuevo informe
 router.post("/", authRequired, createReport);
 
-// Route to get reports by pet
+// Obtener informes por mascota
 router.get("/pet/:petId", authRequired, getReportsByPet);
 
-// Route to get reports created by a veterinarian
+// Obtener informes creados por un veterinario
 router.get("/veterinarian", authRequired, getReportsByVeterinarian);
 
-// Route to get a report by ID
+// Obtener un informe por ID
 router.get("/:reportId", authRequired, getReportById);
 
-// Route to update a report
+// Actualizar un informe
 router.put("/:reportId", authRequired, updateReport);
 
-// Route to delete a report
+// Eliminar un informe
 router.delete("/:reportId", authRequired, deleteReport);
 
 export default router;

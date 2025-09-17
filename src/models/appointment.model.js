@@ -1,38 +1,38 @@
 import mongoose from "mongoose";
 
-// Appointment schema structure
+// Estructura del esquema de citas
 const appointmentSchema = new mongoose.Schema(
   {
-    clientId: {
+    idClient: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Client", // Reference to Client model
+      ref: "Client", // Referencia al modelo del cliente
       required: true,
     },
-    veterinarianId: {
+    idVeterinarian: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Veterinarian", // Reference to Veterinarian model
+      ref: "Veterinarian", // Referencia al modelo del veterinario
       required: true,
     },
-    veterinarianFullName: {
+    veterinarianFullname: {
       type: String,
       required: true,
     },
-    clientFullName: {
+    clientFullname: {
       type: String,
       required: true,
     },
     date: {
-      type: Date, // Appointment date
+      type: Date, // La fecha de la cita
       required: true,
     },
     status: {
       type: String,
-      enum: ["Pending", "Confirmed", "Cancelled"], // Appointment status
-      default: "Pending", // Default status
+      enum: ["Pendiente", "Confirmada", "Cancelada"], // Estatus de la cita
+      default: "Pendiente", // Establecer "Pendiente" como el estado predeterminado
     },
   },
-  { timestamps: true } // Include createdAt and updatedAt timestamps
+  { timestamps: true } // Incluir timestamps de creación y actualización
 );
 
-// Export the Appointment model
+// Exportamos el modelo de la cita
 export default mongoose.model("Appointment", appointmentSchema);

@@ -1,6 +1,6 @@
 import Report from "../models/report.model.js";
 
-// Create a new report
+// Crear un nuevo informe
 export const createReport = async (req, res) => {
   const {
     ownerName,
@@ -19,16 +19,16 @@ export const createReport = async (req, res) => {
     recommendations,
   } = req.body;
 
-  const { id: veterinarianId } = req.user; // Veterinarian ID from token
+  const { id: veterinarianId } = req.user; // ID del veterinario desde el token
 
   try {
-    // Create the report
+    // Crear el informe
     const newReport = new Report({
       ownerName,
       ownerPhone,
       ownerEmail,
-      petId, // Store only the pet ID
-      petName, // Store pet name
+      petId, // Guardamos solo el ID de la mascota
+      petName, // Guardamos el nombre de la mascota
       chipNumber,
       species,
       weight,
@@ -38,10 +38,10 @@ export const createReport = async (req, res) => {
       diagnosis,
       treatment,
       recommendations,
-      veterinarianId, // Store only the veterinarian ID
+      veterinarianId, // Guardamos solo el ID del veterinario
     });
 
-    // Save the report in the database
+    // Guardar el informe en la base de datos
     const savedReport = await newReport.save();
 
     res.status(201).json({
@@ -54,18 +54,19 @@ export const createReport = async (req, res) => {
   }
 };
 
-// Get a report by ID
+// Obtener un informe por ID
 export const getReportById = async (req, res) => {
   const { reportId } = req.params;
 
   try {
-    // Find the report by its ID
+    // Buscar el informe por su ID
     const report = await Report.findById(reportId);
 
     if (!report) {
       return res.status(404).json({ message: "Report not found" });
     }
 
+    // Si se encuentra el informe, devolverlo
     res.json({ report });
   } catch (error) {
     console.error("Error fetching report by ID:", error);
@@ -73,12 +74,12 @@ export const getReportById = async (req, res) => {
   }
 };
 
-// Get reports by pet
+// Obtener informes por mascota
 export const getReportsByPet = async (req, res) => {
   const { petId } = req.params;
 
   try {
-    const reports = await Report.find({ petId }); // Filter by petId
+    const reports = await Report.find({ petId }); // Filtramos por `petId`
     res.json({ reports });
   } catch (error) {
     console.error("Error fetching reports by pet:", error);
@@ -86,12 +87,14 @@ export const getReportsByPet = async (req, res) => {
   }
 };
 
-// Get reports created by a veterinarian
+// Obtener informes creados por un veterinario
 export const getReportsByVeterinarian = async (req, res) => {
   const { id: veterinarianId } = req.user;
 
   try {
-    const reports = await Report.find({ veterinarianId }); // Filter by veterinarianId
+    const reports = await Report.find({
+      veterinarianId, // Buscamos los informes por `veterinarianId`
+    });
     res.json({ reports });
   } catch (error) {
     console.error("Error fetching reports by veterinarian:", error);
@@ -99,7 +102,7 @@ export const getReportsByVeterinarian = async (req, res) => {
   }
 };
 
-// Update a report
+// Actualizar un informe
 export const updateReport = async (req, res) => {
   const { reportId } = req.params;
   const updateData = req.body;
@@ -121,7 +124,7 @@ export const updateReport = async (req, res) => {
   }
 };
 
-// Delete a report
+// Eliminar un informe
 export const deleteReport = async (req, res) => {
   const { reportId } = req.params;
 

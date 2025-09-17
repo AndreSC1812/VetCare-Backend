@@ -1,32 +1,32 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
-dotenv.config(); // Load environment variables
+dotenv.config(); // Cargar las variables de entorno
 
-// Middleware to validate user token
+// Middleware para validar el token del usuario
 export const authRequired = (req, res, next) => {
-  // Extract token from Authorization header
+  // Extraer el token del encabezado Authorization
   const token = req.header("Authorization");
 
-  // Check if token is present
+  // Comprobar si el token está presente
   if (!token) {
     return res.status(401).json({ message: "Access denied. Token missing." });
   }
 
-  // Remove "Bearer " prefix if present
+  // Eliminar el prefijo "Bearer " del token, si está presente
   const bearerToken = token.startsWith("Bearer ") ? token.split(" ")[1] : token;
 
   try {
-    // Verify token and decode payload
+    // Verificar el token y decodificar su carga
     const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET);
 
-    // Attach user info to the request
+    // Adjuntar la información del usuario a la solicitud
     req.user = decoded;
 
-    // Proceed to next middleware or route handler
+    // Pasar al siguiente middleware o controlador de ruta
     next();
   } catch (error) {
-    // Handle invalid tokens
+    // Manejar tokens inválidos
     res.status(401).json({ message: "Invalid token" });
   }
 };

@@ -6,8 +6,8 @@ import {
 
 const router = Router();
 
-// Routes to list and retrieve veterinarians
-router.get("/", getAllVeterinarians); // List all veterinarians
-router.get("/:id", getVeterinarianById); // Get a specific veterinarian by ID
+// Rutas para listar y obtener veterinarios
+router.get("/", getAllVeterinarians); // Listar todos los veterinarios
+router.get("/:id", getVeterinarianById); // Obtener veterinario específico por ID
 
 export default router;

@@ -1,25 +1,24 @@
-// Controller for user profile
+// controlador para el perfil del usuario
 import Client from "../models/client.model.js";
 import Veterinarian from "../models/veterinarian.model.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Upload profile image
 export const uploadProfileImage = async (req, res) => {
-  const { id, userType } = req.user; // Extract user ID and type from token
+  const { id, userType } = req.user; // Extraemos el id y el tipo de usuario desde el token
 
-  // Ensure a file was uploaded
+  // Asegúrate de que el archivo se haya subido correctamente
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  // Use environment variable to build the image URL
+  // Usamos la variable de entorno para construir la URL
   const imagePath = `${process.env.IMAGE_URL_BASE}${req.file.filename}`;
 
   const Model = userType === "veterinarian" ? Veterinarian : Client;
 
   try {
-    // Update user profile with the new image
+    // Actualizamos el perfil del usuario con la nueva imagen
     const user = await Model.findByIdAndUpdate(
       id,
       { profileImage: imagePath },
@@ -30,7 +29,7 @@ export const uploadProfileImage = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Respond with message and updated image URL
+    // Respondemos con el mensaje y la URL de la imagen actualizada
     res.json({
       message: "Profile image uploaded successfully",
       profileImage: user.profileImage,
@@ -41,15 +40,14 @@ export const uploadProfileImage = async (req, res) => {
   }
 };
 
-// Update profile data
 export const updateProfileData = async (req, res) => {
-  const { id, userType } = req.user; // Get `id` and `userType` from token
+  const { id, userType } = req.user; // Obtenemos `id` y `userType` del token
 
   try {
     let user;
 
     if (userType === "veterinarian") {
-      // If user is a veterinarian, get relevant fields
+      // Si es un veterinario, obtenemos los campos relevantes
       const {
         fullname,
         username,
@@ -73,12 +71,12 @@ export const updateProfileData = async (req, res) => {
       if (startTime) updateData.startTime = startTime;
       if (endTime) updateData.endTime = endTime;
 
-      // Update veterinarian
+      // Actualizamos al veterinario
       user = await Veterinarian.findByIdAndUpdate(id, updateData, {
         new: true,
       });
     } else {
-      // If user is a client, get relevant fields
+      // Si es un cliente, obtenemos los campos relevantes
       const { fullname, username, email, phone, address } = req.body;
 
       const updateData = {};
@@ -88,7 +86,7 @@ export const updateProfileData = async (req, res) => {
       if (phone) updateData.phone = phone;
       if (address) updateData.address = address;
 
-      // Update client
+      // Actualizamos al cliente
       user = await Client.findByIdAndUpdate(id, updateData, { new: true });
     }
 

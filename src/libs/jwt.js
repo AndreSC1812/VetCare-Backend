@@ -3,18 +3,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Function to create an access token
+//Funcion para crear un token de acceso
 export function createAccessToken(payload) {
   return new Promise((resolve, reject) => {
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: "2d" }, // Token expires in 2 days
+      { expiresIn: "2d" },
       (err, token) => {
-        if (err) {
-          console.error("Error creating JWT:", err);
-          return reject(err);
-        }
+        if (err) console.log(err);
         resolve(token);
       }
     );

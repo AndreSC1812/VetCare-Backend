@@ -1,15 +1,15 @@
-// Entry point to start the entire server
-// For my custom modules, it's necessary to include the .js extension
+//aqui estara todo lo necesario para arrancar el servidor entero
+//en modulos creados por mi es necesario poner el.js
 import app from "./app.js";
 import { connectDB } from "./db.js";
 import dotenv from "dotenv";
 
-dotenv.config(); // Load environment variables
+dotenv.config(); // Cargar las variables de entorno
 
-// Connect to the database
+//conectamos a la base de datos
 connectDB();
 
-// Start listening on the port defined in environment variables
-app.listen(process.env.PORT, () => {
-  console.log("Server listening on port", process.env.PORT);
-});
+//Escuchar en el puerto definido en las variables de entorno
+app.listen(process.env.PORT);
+
+console.log("Server escuchando en puerto ", process.env.PORT);

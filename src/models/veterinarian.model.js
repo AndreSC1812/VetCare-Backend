@@ -1,10 +1,10 @@
+//estructura de nuestro Veterinario
 import mongoose from "mongoose";
 
-// Define the Veterinarian schema
 const veterinarianSchema = new mongoose.Schema(
   {
-    fullName: {
-      type: String, // Full name
+    fullname: {
+      type: String, // Nombre completo
     },
     username: {
       type: String,
@@ -21,16 +21,16 @@ const veterinarianSchema = new mongoose.Schema(
       unique: true,
     },
     specialization: {
-      type: String, // Specialization (e.g., Surgery, Dermatology, etc.)
+      type: String, // Especialización (ej. Cirugía, dermatología, etc.)
     },
     yearsOfExperience: {
-      type: Number, // Years of experience
+      type: Number, // Años de experiencia
     },
     clinicAddress: {
-      type: String, // Clinic address
+      type: String, // Dirección de la clínica
     },
     phone: {
-      type: String, // Phone number
+      type: String, // Número de teléfono
     },
     profileImage: {
       type: String,
@@ -38,14 +38,14 @@ const veterinarianSchema = new mongoose.Schema(
         "https://img.freepik.com/vector-premium/icono-perfil-usuario-estilo-plano-ilustracion-vector-avatar-miembro-sobre-fondo-aislado-concepto-negocio-signo-permiso-humano_157943-15752.jpg",
     },
     startTime: {
-      type: String, // Start time (24h format, e.g., "09:00")
+      type: String, // Hora de inicio (formato 24h, ej. "09:00")
     },
     endTime: {
-      type: String, // End time (24h format, e.g., "17:00")
+      type: String, // Hora de fin (formato 24h, ej. "17:00")
     },
   },
-  { timestamps: true } // Include createdAt and updatedAt timestamps
+  { timestamps: true }
 );
 
-// Export the Veterinarian model for CRUD operations
+//para interactuar con la base de datos CRUD
 export default mongoose.model("Veterinarian", veterinarianSchema);

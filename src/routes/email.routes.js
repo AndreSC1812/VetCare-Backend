@@ -3,7 +3,7 @@ import { sendNotification } from "../controllers/email.controller.js";
 
 const router = Router();
 
-// Route to send email notifications
+// Ruta para enviar notificaciones por correo
 router.post("/sendNotification", sendNotification);
 
 export default router;

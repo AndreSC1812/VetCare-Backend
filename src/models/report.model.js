@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 
-// Define the Report schema
 const reportSchema = new mongoose.Schema(
   {
-    // Owner information
+    // Información del propietario
     ownerName: {
       type: String,
       required: true,
@@ -17,13 +16,15 @@ const reportSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Pet information
+    // Información de la mascota
     petId: {
-      type: String, // Pet ID
+      // ID de la mascota
+      type: String,
       required: true,
     },
     petName: {
-      type: String, // Pet name
+      // Nombre de la mascota
+      type: String,
       required: true,
     },
     chipNumber: {
@@ -36,10 +37,10 @@ const reportSchema = new mongoose.Schema(
     },
     weight: {
       type: Number,
-      default: null, // Weight in KG
+      default: null,
     },
 
-    // Report details
+    // Información del informe
     consultationDate: {
       type: Date,
       required: true,
@@ -66,12 +67,12 @@ const reportSchema = new mongoose.Schema(
     },
 
     veterinarianId: {
-      type: String, // Veterinarian ID (only storing ID, not reference)
+      // ID del veterinario (solo se guarda el ID, no una referencia)
+      type: String,
       required: true,
     },
   },
-  { timestamps: true } // Include createdAt and updatedAt timestamps
+  { timestamps: true }
 );
 
-// Export the Report model
 export default mongoose.model("Report", reportSchema);

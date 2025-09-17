@@ -1,11 +1,10 @@
-// Main backend code (Express)
+//aqui estara todo el codigo del backend(express)
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import multer from "multer";
 import path from "path";
-
-// Import route modules
+//importamos las rutas de autenticacion
 import authRoutes from "./routes/auth.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import clientRoutes from "./routes/client.routes.js";
@@ -15,53 +14,54 @@ import emailRoutes from "./routes/email.routes.js";
 import reportRoutes from "./routes/report.routes.js";
 import appointmentRoutes from "./routes/appointment.routes.js";
 
-// Initialize Express app
+//usamos app como nuestra instancia de express
 const app = express();
 
-// Configure multer to store uploaded images in the "uploads" folder
+//configuramos multer para guardar imagenes en una carpeta uploads
 const storage = multer.diskStorage({
   destination: "uploads/",
   filename: (req, file, cb) => {
-    const fileExtension = path.extname(file.originalname); // Extract file extension
-    cb(null, Date.now() + fileExtension); // Use timestamp + extension as filename
+    const fileExtension = path.extname(file.originalname); // Extrae la extensión del archivo
+    cb(null, Date.now() + fileExtension); // Usa solo la marca de tiempo y la extensión
   },
 });
 
 const upload = multer({ storage });
 
-// Enable CORS for all requests
+//usaremos cors para que cualquiera pueda hacer peticiones al backend
 app.use(cors());
 
-// Use morgan to log HTTP requests to the console
+//usaremos morgan para que nos mande mensajes de las peticiones por consola
 app.use(morgan("dev"));
 
-// Parse JSON bodies of incoming requests
+//parsear el cuerpo de las solicitudes en JSON
 app.use(express.json());
 
-// Serve static files from the uploads folder
+// Configurar carpeta de archivos estáticos(Para que sea accesible a la hora de hacer un get)
 app.use("/uploads", express.static("uploads"));
 
-// Authentication routes
+//rutas de autenticacion
 app.use("/api/auth", authRoutes);
 
-// Profile routes
+//ruta de perfil
 app.use("/api/profile", profileRoutes(upload));
 
-// Routes for clients and veterinarians
+// Rutas para clientes y veterinarios
 app.use("/api/clients", clientRoutes);
+
 app.use("/api/veterinarians", veterinarianRoutes);
 
-// Pet routes
+// Rutas de mascotas
 app.use("/api/pets", petRoutes(upload));
 
-// Email notification routes
+// Rutas de correos
 app.use("/api/email", emailRoutes);
 
-// Report routes
+// Rutas de informes
 app.use("/api/reports", reportRoutes);
 
-// Appointment routes
+//Rutas de citas
 app.use("/api/appointments", appointmentRoutes);
 
-// Export the Express app
+//exportamos el app
 export default app;
